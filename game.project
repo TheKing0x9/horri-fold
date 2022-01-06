@@ -1,0 +1,25 @@
+[bootstrap]
+main_collection = /collections/main.collectionc
+render = /orthographic/render/orthographic.renderc
+
+[script]
+shared_state = 1
+
+[display]
+width = 1280
+height = 720
+
+[android]
+input_method = HiddenInputField
+
+[project]
+title = MiamiSynth
+dependencies#0 = https://github.com/britzl/defold-orthographic/archive/refs/tags/3.1.1.zip
+
+[graphics]
+default_texture_min_filter = nearest
+default_texture_mag_filter = nearest
+
+[input]
+game_binding = /builtins/input/all.input_bindingc
+

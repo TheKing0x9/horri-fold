@@ -25,8 +25,9 @@ in the `Render` field in the `Bootstrap` section
 
 > To Be Written
 
-##Credits
-	- Thanks to [gizmo199](https://gizmo199.itch.io) for the Horri-Fi Shader
-	- The art in the demo is based on an asset pack by [Ansimuz](Ansimuz.itch.io)
-	- The music in the demo is from ...
+## Credits
+
+  - Thanks to [gizmo199](https://gizmo199.itch.io) for the Horri-Fi Shader
+  - The art in the demo is based on an asset pack by [Ansimuz](Ansimuz.itch.io)
+  - The music in the demo is from [Outro Party Music by Buffy](https://opengameart.org/content/outro-party-music)
 ---

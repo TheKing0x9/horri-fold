@@ -1,0 +1,81 @@
+local max_entities_per_layer = 3
+
+local static = {
+	{
+		speed = 0,
+		position = vmath.vector3(0, 0, -0.8),
+		factory_url = "/factories#sun",
+	},
+	{
+		speed = 0,
+		position = vmath.vector3(0, -80, -0.01),
+		factory_url = "/factories#car",
+	},
+}
+
+local layers = {
+	{
+		size = 224,
+		factory_url = "/factories#back",
+		members = {}
+	},
+	{
+		size = 256,
+		factory_url = "/factories#buildings",
+		members = {},
+	},
+	{
+		size = 224,
+		factory_url = "/factories#palms",
+		members = {},
+	},
+	{
+		size = 896,
+		factory_url = "/factories#road",
+		members = {}
+	},
+	{
+		size = 256,
+		offset = -16,
+		factory_url = "/factories#palm-tree",
+		members = {}
+	}
+}
+
+local WEST = vmath.vector3(-1, 0, 0)
+
+function init(self)
+	for _, v in ipairs(static) do
+		factory.create(v.factory_url, v.position)
+	end
+
+	for k,  v in ipairs(layers) do
+		for i = -max_entities_per_layer, max_entities_per_layer do
+			local position = vmath.vector3(i * v.size, v.offset or 0, -1 + (k - 1) * 0.25)
+
+			local id = factory.create(v.factory_url, position)
+			table.insert(v.members, id)
+
+			v.speed = 25 * k
+		end
+		v.last_member = v.members[#v.members]
+	end
+
+	sound.play("/music#music")
+end
+
+function update(self, dt)
+	for _, v in ipairs(layers) do
+		for _, j in ipairs(v.members) do
+			local position = go.get_position(j)
+			position = position + WEST * v.speed * dt
+
+			if position.x < -max_entities_per_layer * v.size then
+				local l = go.get_position(v.last_member)
+				position = l + vmath.vector3(v.size, 0, 0)
+				v.last_member = j
+			end
+			go.set_position(position, j)
+		end
+	end
+end

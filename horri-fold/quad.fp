@@ -22,6 +22,9 @@ uniform lowp vec4 tint;
 #define CRT enable_effects2.z
 #define TIME enable_effects2.w
 
+#define BLOOM_RADIUS effects1.x
+#define BLOOM_INTENSITY effects1.y
+#define BLOOM_THRESHOLD effects1.z
 #define CHROMATIC_STRENGTH effects1.w
 
 #define VIG_STRENGTH effects2.x
@@ -32,8 +35,7 @@ uniform lowp vec4 tint;
 #define SCAN_STRENGTH effects3.x
 #define CRT_CURVE effects3.y
 
-lowp vec2 vignette = vec2(0.5, 0.5);
-lowp vec2 curve = vec2(2.);
+lowp vec2 texel = vec2(2.);
 
 float noise(vec2 uv)
 {
@@ -70,6 +72,31 @@ vec2 crt_curve( vec2 uv )
 	return uv;
 }
 
+vec4 blur(vec2 uv)
+{
+	float total = 0.;
+	float rad = 1.;
+	mat2 ang = mat2(.73736882209777832,-.67549037933349609,.67549037933349609,.73736882209777832);
+	vec2 point = normalize(fract(cos(uv*mat2(195,174,286,183))*742.)-.5)*(BLOOM_RADIUS/sqrt(SAMPLES));
+	vec4 amount = vec4(0);
+
+	for ( float i=0.; i<SAMPLES; i++ )
+	{
+		point*=ang;
+		rad+=1./rad;
+		vec4 samp = texture2D(tex0, uv + point * (rad-1.) * texel);
+
+		float mul = 1.;
+		float lum = ( samp.r+samp.g+samp.b )/3.;
+		if ( lum < BLOOM_THRESHOLD ){ mul = 0.; }
+
+		amount += samp*(1./rad)*mul;
+		total+=(1./rad);
+	}
+	amount /= total;
+	return amount*BLOOM_INTENSITY;
+}
+
 void main()
 {
 	vec2 uv = var_texcoord0;
@@ -80,6 +107,7 @@ void main()
 
 	if (CHROMATIC > 0.5) color.rgb = tint.rgb * chromatic(uv, CHROMATIC_STRENGTH * 0.01);
 	if (SCANLINES > 0.5) color.rgb *= (1.-SCAN_STRENGTH)+(sin(uv.y*1024.)*SCAN_STRENGTH);
+	if (BLOOM > 0.5) color.rgb += blur(uv).rgb;
 	if (NOISE > 0.5) color.rgb += noise(uv) * NOISE_STRENGTH;
 	if (VHS > 0.5) color += vhs(uv);
 	if (VIGNETTE > 0.5) color.rgb *= vig(uv);

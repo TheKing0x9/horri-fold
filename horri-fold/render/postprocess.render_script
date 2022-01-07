@@ -1,0 +1,193 @@
+local camera = require "orthographic.camera"
+
+local IDENTITY = vmath.matrix4()
+
+local BLACK = vmath.vector4(0)
+local AMBIENT_LIGHT = vmath.vector4(0, 0, 0, 1)
+
+local function create_render_target(name)
+	local color_params = {
+		format = render.FORMAT_RGBA,
+		width = render.get_window_width(),
+		height = render.get_window_height(),
+		min_filter = render.FILTER_LINEAR,
+		mag_filter = render.FILTER_LINEAR,
+		u_wrap = render.WRAP_CLAMP_TO_EDGE,
+		v_wrap = render.WRAP_CLAMP_TO_EDGE
+	}
+
+	local depth_params = {
+		format = render.FORMAT_DEPTH,
+		width = render.get_window_width(),
+		height = render.get_window_height(),
+		u_wrap = render.WRAP_CLAMP_TO_EDGE,
+		v_wrap = render.WRAP_CLAMP_TO_EDGE
+	}
+	return render.render_target(name, {[render.BUFFER_COLOR_BIT] = color_params })
+end
+
+local function create_render_targets(self)
+	self.normal_rt = create_render_target("normal")
+	self.light_rt = create_render_target("light")
+end
+
+function init(self)
+	self.tile_pred = render.predicate({"tile"})
+	self.gui_pred = render.predicate({"gui"})
+	self.text_pred = render.predicate({"text"})
+	self.particle_pred = render.predicate({"particle"})
+
+	self.quad_pred = render.predicate({"quad"})
+	self.light_pred = render.predicate({"light"})
+
+	self.clear_color = vmath.vector4(0, 0, 0, 0)
+	self.clear_color.x = sys.get_config("render.clear_color_red", 0.1)
+	self.clear_color.y = sys.get_config("render.clear_color_green", 0.3)
+	self.clear_color.z = sys.get_config("render.clear_color_blue", 0.7)
+	self.clear_color.w = sys.get_config("render.clear_color_alpha", 0)
+
+	self.view = IDENTITY
+
+	self.width = render.get_window_width()
+	self.height = render.get_window_height()
+
+	create_render_targets(self)
+end
+
+
+local function clear(color, depth, stencil)
+	if depth then
+		render.set_depth_mask(true)
+	end
+
+	if stencil then
+		render.set_stencil_mask(0xff)
+	end
+	render.clear({[render.BUFFER_COLOR_BIT] = color, [render.BUFFER_DEPTH_BIT] = depth, [render.BUFFER_STENCIL_BIT] = stencil})
+end
+
+local function render_to_world(self, predicates, constants)
+	render.set_depth_mask(false)
+	render.disable_state(render.STATE_DEPTH_TEST)
+	render.disable_state(render.STATE_STENCIL_TEST)
+	render.disable_state(render.STATE_CULL_FACE)
+	render.enable_state(render.STATE_BLEND)
+	render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
+
+	for _,pred in ipairs(predicates) do
+		render.draw(pred, constants)
+	end
+end
+
+local function render_to_rt(self, render_target, render_fn)
+	render.enable_render_target(render_target)
+	render_fn(self)
+	render.disable_render_target(render_target)
+end
+
+
+local function mix_to_quad(self, rt0, rt1)
+	render.set_depth_mask(false)
+	render.disable_state(render.STATE_DEPTH_TEST)
+	render.disable_state(render.STATE_STENCIL_TEST)
+	render.disable_state(render.STATE_CULL_FACE)
+	render.enable_state(render.STATE_BLEND)
+	render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
+
+	render.enable_material(hash("mix_quad"))
+	render.enable_texture(0, rt0, render.BUFFER_COLOR_BIT)
+	render.enable_texture(1, rt1, render.BUFFER_COLOR_BIT)
+	render.draw(self.quad_pred)
+	render.disable_texture(0, rt0)
+	render.disable_texture(1, rt1)
+	render.disable_material()
+end
+
+local function multiply_to_quad(self, rt0, rt1)
+	render.set_depth_mask(false)
+	render.disable_state(render.STATE_DEPTH_TEST)
+	render.disable_state(render.STATE_STENCIL_TEST)
+	render.disable_state(render.STATE_CULL_FACE)
+	render.enable_state(render.STATE_BLEND)
+	render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
+
+	render.enable_material(hash("multiply_quad"))
+	render.enable_texture(0, rt0, render.BUFFER_COLOR_BIT)
+	render.enable_texture(1, rt1, render.BUFFER_COLOR_BIT)
+	render.draw(self.quad_pred)
+	render.disable_texture(0, rt0)
+	render.disable_texture(1, rt1)
+	render.disable_material()
+end
+
+local function draw_to_quad(self, rt)
+	render.set_depth_mask(false)
+	render.disable_state(render.STATE_DEPTH_TEST)
+	render.disable_state(render.STATE_STENCIL_TEST)
+	render.disable_state(render.STATE_CULL_FACE)
+	render.enable_state(render.STATE_BLEND)
+	render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
+
+	render.enable_material(hash("quad"))
+	render.enable_texture(0, rt, render.BUFFER_COLOR_BIT)
+	render.draw(self.quad_pred)
+	render.disable_texture(0, rt)
+	render.disable_material()
+end
+
+
+local function render_to_quad(self, fn)
+	render.set_view(IDENTITY)
+	render.set_projection(IDENTITY)
+	fn(self)
+end
+
+
+function update(self)
+
+	-- recreate render targets if screen size has changed
+	local window_width = render.get_window_width()
+	local window_height = render.get_window_height()
+	if self.width ~= window_width or self.height ~= window_height then
+		self.width = window_width
+		self.height = window_height
+		create_render_targets(self)
+	end
+	
+	for _,camera_id in ipairs(camera.get_cameras()) do
+		local viewport = camera.get_viewport(camera_id)
+		local view = camera.get_view(camera_id)
+		local projection = camera.get_projection(camera_id)
+
+		render.set_viewport(viewport.x, viewport.y, viewport.z, viewport.w)
+
+		-- draw normal sprites, tilemaps etc
+		render_to_rt(self, self.normal_rt, function(self)
+			clear(AMBIENT_LIGHT, nil, nil)
+			render.set_view(view)
+			render.set_projection(projection)
+			render_to_world(self, { self.tile_pred, self.particle_pred })
+		end)
+
+		-- draw combination of normal and lights to quad
+		render_to_quad(self, function(self)
+			clear(BLACK, nil, nil)
+			draw_to_quad(self, self.normal_rt)
+		end)
+	end
+
+	-- draw gui
+	render.set_view(IDENTITY)
+	render.set_projection(vmath.matrix4_orthographic(0, render.get_window_width(), 0, render.get_window_height(), -1, 1))
+	render.enable_state(render.STATE_STENCIL_TEST)
+	render.draw(self.gui_pred)
+	render.draw(self.text_pred)
+	render.disable_state(render.STATE_STENCIL_TEST)
+	render.set_depth_mask(false)
+end
+
+function on_message(self, message_id, message)
+	if message_id == hash("clear_color") then
+		self.clear_color = message.color
+	end
+end

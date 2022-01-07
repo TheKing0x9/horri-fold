@@ -1,0 +1,5 @@
+script: "/horri-fold/render/postprocess.render_script"
+materials {
+  name: "quad"
+  material: "/horri-fold/quad.material"
+}

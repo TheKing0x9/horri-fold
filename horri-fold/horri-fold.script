@@ -1,0 +1,53 @@
+go.property("enable_bloom", true)
+go.property("bloom_radius", 26.56)
+go.property("bloom_intensity", 0.30)
+go.property("bloom_threshold", 0.72)
+
+go.property("enable_chromatic_abbretion", true)
+go.property("chromatic_strength", 0.64)
+
+go.property("enable_vignette", true)
+go.property("vignette_strength", 0.3)
+go.property("vignette_intensity", 0.87)
+
+go.property("enable_noise", true)
+go.property("noise_strength", 0.17)
+
+go.property("enable_vhs_distortion", true)
+go.property("distortion_strength", 0.10)
+
+go.property("enable_scanlines", true)
+go.property("scanlines_strength", 0.10)
+
+go.property("enable_crt", true)
+go.property("crt_curve", 2)
+
+function init(self)
+	self.time = 0
+
+	go.set("#quad", "enable_effects1", vmath.vector4(
+		self.enable_bloom and 1 or 0,
+		self.enable_chromatic_abbretion and 1 or 0,
+		self.enable_vignette and 1 or 0,
+		self.enable_noise and 1 or 0))
+
+	go.set("#quad", "enable_effects2", vmath.vector4(
+		self.enable_vhs_distortion and 1 or 0,
+		self.enable_scanlines and 1 or 0,
+		self.enable_crt and 1 or 0, 0))
+
+	go.set("#quad", "effects1", vmath.vector4(self.bloom_radius, self.bloom_intensity, self.bloom_threshold, self.chromatic_strength))
+	go.set("#quad", "effects2", vmath.vector4(self.vignette_strength, self.vignette_intensity, self.noise_strength, self.distortion_strength))
+	go.set("#quad", "effects3", vmath.vector4(self.scanlines_strength, self.crt_curve, self.crt_curve, 0))
+end
+
+function update(self, dt)
+	self.time = self.time + dt
+	go.set("#quad", "enable_effects2.w", self.time)
+end
+
+function on_message(self, message_id, message, sender)
+	-- Add message-handling code here
+	-- Learn more: https://defold.com/manuals/message-passing/
+	-- Remove this function if not needed
+end

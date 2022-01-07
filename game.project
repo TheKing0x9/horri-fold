@@ -23,3 +23,6 @@ default_texture_mag_filter = nearest
 [input]
 game_binding = /builtins/input/all.input_bindingc
 
+[library]
+include_dirs = horri-fold
+

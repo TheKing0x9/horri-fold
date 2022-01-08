@@ -3,7 +3,7 @@
 A port of [Horri-Fi](https://gizmo199.itch.io/horri-fi) shader to Defold.
 Horri-Fold is a Lo-Fi Horror Shader with support for seven different effects:
 
--Scanlines -Noise -VHS distortion -Bloom -Vignette -Chromatic abberation -CRT TV curve
+-Scanlines -Noise -VHS distortion -Bloom -Vignette -Chromatic aberration -CRT TV curve
 ---
 
 ## Installation
@@ -35,8 +35,8 @@ The following properties are exposed via the Horri-Fold script.
   - **Bloom Threshold** : Provies a cutoff value for the `Bloom Radius` property.
   Should be between `0` and `1`.
 
-  - **Enable Chromatic Abberation** : Enables the chromatic abbration effect.
-  - **Chromatic Strength** : Controls the strength of chromatic abberation.
+  - **Enable Chromatic Aberration** : Enables the chromatic aberration effect.
+  - **Chromatic Strength** : Controls the strength of chromatic aberration.
   Should be between `0` and `1`.
 
   - **Enable Vignette** : Enables the vignette effect
@@ -58,7 +58,49 @@ The following properties are exposed via the Horri-Fold script.
   Should be between `0` and `1`.
 
   - **Enable CRT** : Enables the CRT TV curve effect.
-  - **CRT Curve** : The screen curvature. Should be between `0` and `1`.
+  - **CRT Curve** : The screen curvature. Should be between `0` and `5`.
+
+### Messages
+All of the seven effects can be at runtime via the following messages.
+
+#### bloom
+Configures the bloom parameters. Supports the following keys:
+- `enabled` : `boolean` Enables or disables the effect
+- `radius` : `number` The Radius of bloom effect
+- `intensity` : `number` The Brightness of the bloom effect. Should be between `0` and `1`.
+- `threshold` : `number` Provies a cutoff value for the `Bloom Radius` property.
+Should be between `0` and `1`.
+
+#### chromatic_aberration
+Configues the Chromatic Aberration. Supports the following keys:
+- `enabled` : `boolean` Enables or disables the effect.
+- `strength` : `number` The strength of the effect. Should be between `0` and `1`.
+
+#### vignette
+Configues the Vignette. Supports the following keys:
+- `enabled` : `boolean` Enables or disables the effect.
+- `strength` : `number` The strength of the effect. Should be between `0` and `1`.
+- `intensity` : `number` The intensity of vignette. Should be between `0` and `1`.
+
+#### noise
+Configues the Noise effect. Supports the following keys:
+- `enabled` : `boolean` Enables or disables the effect.
+- `strength` : `number` The strength of the effect. Should be between `0` and `1`.
+
+#### vhs
+Configues the VHS Distortion effect. Supports the following keys:
+- `enabled` : `boolean` Enables or disables the effect.
+- `strength` : `number` The strength of the effect. Should be between `0` and `1`.
+
+#### scanlines
+Configues Scanlines. Supports the following keys:
+- `enabled` : `boolean` Enables or disables the effect.
+- `strength` : `number` The strength of the effect. Should be between `0` and `1`.
+
+#### crt
+Configues the CRT curve. Supports the following keys:
+- `enabled` : `boolean` Enables or disables the effect.
+- `curve` : `number` The curvature of the screen. Should be between `0` and `5`.
 
 ### Custom Render Script/Camera Integration
 While the in-built render script depends on `Defold Orthographic` to work,

@@ -1,5 +1,5 @@
 components {
-  id: "horri-fold"
+  id: "script"
   component: "/horri-fold/horri-fold.script"
   position {
     x: 0.0
@@ -16,11 +16,6 @@ components {
     id: "enable_bloom"
     value: "false"
     type: PROPERTY_TYPE_BOOLEAN
-  }
-  properties {
-    id: "chromatic_strength"
-    value: "0.02"
-    type: PROPERTY_TYPE_NUMBER
   }
 }
 embedded_components {

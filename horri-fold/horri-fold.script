@@ -3,7 +3,7 @@ go.property("bloom_radius", 26.56)
 go.property("bloom_intensity", 0.30)
 go.property("bloom_threshold", 0.72)
 
-go.property("enable_chromatic_abbretion", true)
+go.property("enable_chromatic_aberration", true)
 go.property("chromatic_strength", 0.64)
 
 go.property("enable_vignette", true)
@@ -22,12 +22,20 @@ go.property("scanlines_strength", 0.10)
 go.property("enable_crt", true)
 go.property("crt_curve", 1.0)
 
+local BLOOM = hash("bloom")
+local CHROMATIC_ABERRATION = hash("chromatic_aberration")
+local VIGNETTE = hash("vignette")
+local NOISE = hash("noise")
+local VHS = hash("vhs")
+local SCANLINES = hash("scanlines")
+local CRT = hash("crt")
+
 function init(self)
 	self.time = 0
 
 	go.set("#quad", "enable_effects1", vmath.vector4(
 		self.enable_bloom and 1 or 0,
-		self.enable_chromatic_abbretion and 1 or 0,
+		self.enable_chromatic_aberration and 1 or 0,
 		self.enable_vignette and 1 or 0,
 		self.enable_noise and 1 or 0))
 
@@ -47,7 +55,84 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	-- Add message-handling code here
-	-- Learn more: https://defold.com/manuals/message-passing/
-	-- Remove this function if not needed
+	if message_id == BLOOM then
+		if message.enable then
+			self.enable_bloom = true
+
+			if message.radius then self.bloom_radius = message.radius end
+			if message.intensity then self.bloom_intensity = message.intensity end
+			if message.threshold then self.bloom_threshold = message.threshold end
+
+			go.set("#quad", "effects1", vmath.vector4(self.bloom_radius, self.bloom_intensity, self.bloom_threshold, self.chromatic_strength))
+		else
+			self.enable_bloom = false
+		end
+		go.set("#quad", "enable_effects1.x", self.enable_bloom and 1 or 0)
+	elseif message_id == CHROMATIC_ABERRATION then
+		if message.enable then
+			if message.strength then
+				self.chromatic_strength = message.strength
+			end
+			self.enable_chromatic_aberration = true
+			go.set("#quad", "effects3.x", self.chromatic_strength)
+		else
+			self.enable_chromatic_aberration = false
+		end
+		go.set("#quad", "enable_effects1.y", self.enable_chromatic_aberration and 1 or 0)
+	elseif message_id == VIGNETTE then
+		if message.enable then
+			if message.strength then self.vignette_strength = message.strength end
+			if message.intensity then self.vignette_intensity = message.intensity end
+
+			self.enable_vignette = true
+			go.set("#quad", "effects2", vmath.vector4(self.vignette_strength, self.vignette_intensity, self.noise_strength, self.distortion_strength))
+		else
+			self.enable_vignette = false
+		end
+		go.set("#quad", "enable_effects1.z", self.enable_vignette and 1 or 0)
+	elseif message_id == NOISE then
+		if message.enable then
+			if message.strength then
+				self.noise_strength = message.strength
+			end
+			self.enable_noise = true
+			go.set("#quad", "effects3.x", self.noise_strength )
+		else
+			self.enable_noise = false
+		end
+		go.set("#quad", "enable_effects1.w", self.enable_noise and 1 or 0)
+	elseif message_id == VHS then
+		if message.enable then
+			if message.strength then
+				self.distortion_strength = message.strength
+			end
+			self.enable_scanlines = true
+			go.set("#quad", "effects3.x", self.distortion_strength)
+		else
+			self.enable_scanlines = false
+		end
+		go.set("#quad", "enable_effects2.x", self.enable_vhs_distortion and 1 or 0)
+	elseif message_id == SCANLINES then
+		if message.enable then
+			if message.strength then
+				self.scanlines_strength = message.strength
+			end
+			self.enable_scanlines = true
+			go.set("#quad", "effects3.x", self.scanlines_strength )
+		else
+			self.enable_scanlines = false
+		end
+		go.set("#quad", "enable_effects2.y", self.enable_scanlines and 1 or 0)
+	elseif message_id == CRT then
+		if message.enable then
+			if message.curve then
+				self.crt_curve = message.curve
+			end
+			self.enable_crt = true
+			go.set("#quad", "effects3.y", self.crt_curve)
+		else
+			self.enable_crt = false
+		end
+		go.set("#quad", "enable_effects2.z", self.enable_crt and 1 or 0)
+	end
 end

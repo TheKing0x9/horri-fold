@@ -77,6 +77,7 @@ The demo assets are licensed under CC0 license.
 ## Credits
 
   - Thanks to [gizmo199](https://gizmo199.itch.io) for the Horri-Fi Shader.
+  - Improvements to the crt code were taken from [Godot Shaders](https://godotshaders.com/shader/vhs-and-crt-monitor-effect/)
   - The art in the demo is based on an asset pack by [Ansimuz](Ansimuz.itch.io)
   - The music in the demo is from [Outro Party Music by Buffy](https://opengameart.org/content/outro-party-music).
 ---

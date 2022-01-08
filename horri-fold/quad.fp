@@ -63,13 +63,13 @@ vec3 chromatic(vec2 uv, float offset)
 	return vec3(_r,_g,_b);
 }
 
-vec2 crt_curve( vec2 uv )
-{
-	uv = uv * 2.0 - 1.0;
-	vec2 uvoff = abs(uv.xy) / vec2(CRT_CURVE, CRT_CURVE);
-	uv = uv + uv * uvoff * uvoff;
-	uv = uv * .5 + .5;
-	return uv;
+vec2 warp(vec2 uv){
+	vec2 delta = uv - 0.5;
+	float delta2 = dot(delta.xy, delta.xy);
+	float delta4 = delta2 * delta2;
+	float delta_offset = delta4 * CRT_CURVE;
+
+	return uv + delta * delta_offset;
 }
 
 vec4 blur(vec2 uv)
@@ -100,7 +100,7 @@ vec4 blur(vec2 uv)
 void main()
 {
 	vec2 uv = var_texcoord0;
-	if (CRT > 0.5) uv = crt_curve(var_texcoord0.xy);
+	if (CRT > 0.5) uv = warp(uv);
 
 	vec4 tint_pm = vec4(tint.xyz * tint.w, tint.w);
 	vec4 color = texture2D(tex0, uv) * tint_pm;

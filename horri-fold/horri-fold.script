@@ -20,7 +20,7 @@ go.property("enable_scanlines", true)
 go.property("scanlines_strength", 0.10)
 
 go.property("enable_crt", true)
-go.property("crt_curve", 2)
+go.property("crt_curve", 1.0)
 
 function init(self)
 	self.time = 0

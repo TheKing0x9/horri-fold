@@ -72,7 +72,7 @@ function update(self, dt)
 
 			if position.x < -max_entities_per_layer * v.size then
 				local l = go.get_position(v.last_member)
-				position = l + vmath.vector3(v.size, 0, 0)
+				position = l + vmath.vector3(v.size - 1, 0, 0)
 				v.last_member = j
 			end
 			go.set_position(position, j)

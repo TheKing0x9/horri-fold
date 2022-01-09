@@ -7,7 +7,7 @@ Horri-Fold is a Lo-Fi Horror Shader with support for seven different effects:
 ---
 
 ## Installation
-You can use the orthograpic camera in your own project by adding this project as
+You can use Horri-Fold in your own project by adding this project as
 a [Defold library dependency](http://www.defold.com/manuals/libraries/).
 Open your game.project file and in the dependencies field under project add:
 

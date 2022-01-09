@@ -35,8 +35,6 @@ uniform lowp vec4 tint;
 #define SCAN_STRENGTH effects3.x
 #define CRT_CURVE effects3.y
 
-lowp vec2 texel = vec2(2.);
-
 float noise(vec2 uv)
 {
 	return fract(sin(uv.x*12.9898+uv.y*78.233)*437.585453*TIME);
@@ -72,7 +70,7 @@ vec2 warp(vec2 uv){
 	return uv + delta * delta_offset;
 }
 
-vec4 blur(vec2 uv)
+vec4 blur(vec2 uv, vec2 texel)
 {
 	float total = 0.;
 	float rad = 1.;
@@ -107,7 +105,7 @@ void main()
 
 	if (CHROMATIC > 0.5) color.rgb = tint.rgb * chromatic(uv, CHROMATIC_STRENGTH * 0.01);
 	if (SCANLINES > 0.5) color.rgb *= (1.-SCAN_STRENGTH)+(sin(uv.y*1024.)*SCAN_STRENGTH);
-	if (BLOOM > 0.5) color.rgb += blur(uv).rgb;
+	if (BLOOM > 0.5) color.rgb += blur(uv, 1/textureSize(tex0, 0)).rgb;
 	if (NOISE > 0.5) color.rgb += noise(uv) * NOISE_STRENGTH;
 	if (VHS > 0.5) color += vhs(uv);
 	if (VIGNETTE > 0.5) color.rgb *= vig(uv);

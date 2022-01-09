@@ -74,7 +74,7 @@ function on_message(self, message_id, message, sender)
 				self.chromatic_strength = message.strength
 			end
 			self.enable_chromatic_aberration = true
-			go.set("#quad", "effects3.x", self.chromatic_strength)
+			go.set("#quad", "effects1.w", self.chromatic_strength)
 		else
 			self.enable_chromatic_aberration = false
 		end
@@ -96,7 +96,7 @@ function on_message(self, message_id, message, sender)
 				self.noise_strength = message.strength
 			end
 			self.enable_noise = true
-			go.set("#quad", "effects3.x", self.noise_strength )
+			go.set("#quad", "effects2.z", self.noise_strength )
 		else
 			self.enable_noise = false
 		end
@@ -106,10 +106,10 @@ function on_message(self, message_id, message, sender)
 			if message.strength then
 				self.distortion_strength = message.strength
 			end
-			self.enable_scanlines = true
-			go.set("#quad", "effects3.x", self.distortion_strength)
+			self.enable_vhs_distortion = true
+			go.set("#quad", "effects2.w", self.distortion_strength)
 		else
-			self.enable_scanlines = false
+			self.enable_vhs_distortion = false
 		end
 		go.set("#quad", "enable_effects2.x", self.enable_vhs_distortion and 1 or 0)
 	elseif message_id == SCANLINES then

@@ -1,0 +1,175 @@
+local function listener(self, event, data)
+	if event == window.WINDOW_EVENT_RESIZED then
+		imgui.set_display_size(data.width, data.height)
+	end
+end
+
+function init(self)
+	window.set_listener(listener)
+	self.show_demo_window = true
+	self.counter = 0
+
+	self.position = vmath.vector3()
+
+	self.script = msg.url("/quad#script")
+
+	self.bloom = {
+		enabled = go.get(self.script, "enable_bloom"),
+		radius = go.get(self.script, "bloom_radius"),
+		intensity = go.get(self.script, "bloom_intensity"),
+		threshold = go.get(self.script, "bloom_threshold")
+	}
+
+	self.chromatic = {
+		enabled = go.get(self.script, "enable_chromatic_aberration"),
+		strength = go.get(self.script, "chromatic_strength")
+	}
+
+	self.vignette = {
+		enabled = go.get(self.script, "enable_vignette"),
+		strength = go.get(self.script, "vignette_strength"),
+		intensity = go.get(self.script, "vignette_intensity")
+	}
+
+	self.noise = {
+		enabled = go.get(self.script, "enable_noise"),
+		strength = go.get(self.script, "noise_strength")
+	}
+
+	self.vhs = {
+		enabled = go.get(self.script, "enable_vhs_distortion"),
+		strength = go.get(self.script, "distortion_strength")
+	}
+
+	self.scanlines = {
+		enabled = go.get(self.script, "enable_scanlines"),
+		strength = go.get(self.script, "scanlines_strength")
+	}
+
+	self.crt = {
+		enabled = go.get(self.script, "enable_crt"),
+		curve = go.get(self.script, "crt_curve")
+	}
+end
+
+function update(self, dt)
+	imgui.begin_window("Effects")
+	imgui.text("Customize the following properties to \nupdate the shader")
+
+	local changed, checked = imgui.checkbox("Bloom", self.bloom.enabled)
+	if changed then
+		self.bloom.enabled = checked
+		msg.post(self.script, "bloom", { enable = checked })
+	end
+
+	local changed, value = imgui.input_float("Bloom \nRadius", self.bloom.radius, 0.01, 1.0, 3)
+	if changed then
+		self.bloom.radius = value
+		msg.post(self.script, "bloom", { enable = checked, radius = self.bloom.radius })
+	end
+
+	local changed, value = imgui.input_float("Bloom \nIntensity", self.bloom.intensity, 0.01, 1.0, 3)
+	if changed then
+		self.bloom.intensity = math.max(math.min(value, 1.0), 0.0)
+		msg.post(self.script, "bloom", { enable = checked, intensity = self.bloom.intensity })
+	end
+
+	local changed, value = imgui.input_float("Bloom \nThreshold", self.bloom.threshold, 0.01, 1.0, 3)
+	if changed then
+		self.bloom.threshold = math.max(math.min(value, 1.0), 0.0)
+		msg.post(self.script, "bloom", { enable = checked, threshold = self.bloom.threshold })
+	end
+
+	imgui.separator()
+
+	local changed, checked = imgui.checkbox("Chromatic \naberration", self.chromatic.enabled)
+	if changed then
+		self.chromatic.enabled = checked
+		msg.post(self.script, "chromatic_aberration", { enable = checked })
+	end
+
+	local changed, value = imgui.input_float("Aberration \nStrength", self.chromatic.strength, 0.01, 1.0, 3)
+	if changed then
+		self.chromatic.strength = math.max(math.min(value, 1.0), 0.0)
+		msg.post(self.script, "chromatic_aberration", { enable = checked, strength = self.chromatic.strength })
+	end
+
+	imgui.separator()
+
+	local changed, checked = imgui.checkbox("Vignette", self.vignette.enabled)
+	if changed then
+		self.vignette.enabled = checked
+		msg.post(self.script, "vignette", { enable = checked })
+	end
+
+	local changed, value = imgui.input_float("Vignette \nStrength", self.vignette.strength, 0.01, 1.0, 3)
+	if changed then
+		self.vignette.strength = math.max(math.min(value, 1.0), 0.0)
+		msg.post(self.script, "vignette", { enable = checked, strength = self.vignette.strength })
+	end
+
+	local changed, value = imgui.input_float("Vignette \nIntensity", self.vignette.intensity, 0.01, 1.0, 3)
+	if changed then
+		self.vignette.intensity = math.max(math.min(value, 1.0), 0.0)
+		msg.post(self.script, "vignette", { enable = checked, intensity = self.vignette.intensity })
+	end
+
+	imgui.separator()
+
+	local changed, checked = imgui.checkbox("Noise", self.noise.enabled)
+	if changed then
+		self.noise.enabled = checked
+		msg.post(self.script, "noise", { enable = checked })
+	end
+
+	local changed, value = imgui.input_float("Noise \nStrength", self.noise.strength, 0.01, 1.0, 3)
+	if changed then
+		self.noise.strength = math.max(math.min(value, 1.0), 0.0)
+		msg.post(self.script, "noise", { enable = checked, strength = self.noise.strength })
+	end
+
+	imgui.separator()
+
+	local changed, checked = imgui.checkbox("VHS Distortion", self.vhs.enabled)
+	if changed then
+		self.vhs.enabled = checked
+		msg.post(self.script, "vhs", { enable = checked })
+	end
+
+	local changed, value = imgui.input_float("Distortion \nStrength", self.vhs.strength, 0.01, 1.0, 3)
+	if changed then
+		print(self.vhs.strength)
+		self.vhs.strength = math.max(math.min(value, 1.0), 0.0)
+		msg.post(self.script, "vhs", { enable = checked, strength = self.vhs.strength })
+	end
+
+	imgui.separator()
+
+	local changed, checked = imgui.checkbox("Scanlines", self.scanlines.enabled)
+	if changed then
+		self.scanlines.enabled = checked
+		msg.post(self.script, "scanlines", { enable = checked })
+	end
+
+	local changed, value = imgui.input_float("Scanlines \nStrength", self.scanlines.strength, 0.01, 1.0, 3)
+	if changed then
+		self.scanlines.strength = math.max(math.min(value, 1.0), 0.0)
+		msg.post(self.script, "scanlines", { enable = checked, strength = self.scanlines.strength })
+	end
+
+	imgui.separator()
+
+	local changed, checked = imgui.checkbox("CRT Curve", self.crt.enabled)
+	if changed then
+		self.crt.enabled = checked
+		msg.post(self.script, "crt", { enable = checked })
+	end
+
+	local changed, value = imgui.input_float("Curve", self.crt.curve, 0.01, 1.0, 3)
+	if changed then
+		self.crt.curve = math.max(math.min(value, 5.0), 0.0)
+		msg.post(self.script, "crt", { enable = checked, curve = self.crt.curve })
+	end
+
+	imgui.end_window()
+end

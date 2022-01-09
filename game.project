@@ -14,7 +14,9 @@ input_method = HiddenInputField
 
 [project]
 title = MiamiSynth
+version = 1.0.0-beta.2
 dependencies#0 = https://github.com/britzl/defold-orthographic/archive/refs/tags/3.1.1.zip
+dependencies#1 = https://github.com/britzl/extension-imgui/archive/master.zip
 
 [graphics]
 default_texture_min_filter = nearest
@@ -25,4 +27,11 @@ game_binding = /builtins/input/all.input_bindingc
 
 [library]
 include_dirs = horri-fold
+
+[html5]
+show_console_banner = 0
+show_made_with_defold = 0
+show_fullscreen_button = 0
+scale_mode = fit
+cssfile = /builtins/manifests/web/dark_theme.css
 

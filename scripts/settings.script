@@ -62,7 +62,7 @@ function update(self, dt)
 		msg.post(self.script, "bloom", { enable = checked })
 	end
 
-	local changed, value = imgui.input_float("Bloom \nRadius", self.bloom.radius, 0.01, 1.0, 3)
+	local changed, value = imgui.input_float("Bloom \nRadius", self.bloom.radius, 0.1, 1.0, 3)
 	if changed then
 		self.bloom.radius = value
 		msg.post(self.script, "bloom", { enable = checked, radius = self.bloom.radius })
@@ -138,7 +138,6 @@ function update(self, dt)
 
 	local changed, value = imgui.input_float("Distortion \nStrength", self.vhs.strength, 0.01, 1.0, 3)
 	if changed then
-		print(self.vhs.strength)
 		self.vhs.strength = math.max(math.min(value, 1.0), 0.0)
 		msg.post(self.script, "vhs", { enable = checked, strength = self.vhs.strength })
 	end
@@ -165,7 +164,7 @@ function update(self, dt)
 		msg.post(self.script, "crt", { enable = checked })
 	end
 
-	local changed, value = imgui.input_float("Curve", self.crt.curve, 0.01, 1.0, 3)
+	local changed, value = imgui.input_float("Curve", self.crt.curve, 0.1, 1.0, 3)
 	if changed then
 		self.crt.curve = math.max(math.min(value, 5.0), 0.0)
 		msg.post(self.script, "crt", { enable = checked, curve = self.crt.curve })

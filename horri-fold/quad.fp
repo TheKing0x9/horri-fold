@@ -105,7 +105,7 @@ void main()
 
 	if (CHROMATIC > 0.5) color.rgb = tint.rgb * chromatic(uv, CHROMATIC_STRENGTH * 0.01);
 	if (SCANLINES > 0.5) color.rgb *= (1.-SCAN_STRENGTH)+(sin(uv.y*1024.)*SCAN_STRENGTH);
-	if (BLOOM > 0.5) color.rgb += blur(uv, 1/textureSize(tex0, 0)).rgb;
+	if (BLOOM > 0.5) color.rgb += blur(uv, vec2(1.)).rgb;
 	if (NOISE > 0.5) color.rgb += noise(uv) * NOISE_STRENGTH;
 	if (VHS > 0.5) color += vhs(uv);
 	if (VIGNETTE > 0.5) color.rgb *= vig(uv);

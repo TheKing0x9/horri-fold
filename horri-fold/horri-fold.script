@@ -56,83 +56,74 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == BLOOM then
-		if message.enable then
-			self.enable_bloom = true
-
-			if message.radius then self.bloom_radius = message.radius end
-			if message.intensity then self.bloom_intensity = message.intensity end
-			if message.threshold then self.bloom_threshold = message.threshold end
-
-			go.set("#quad", "effects1", vmath.vector4(self.bloom_radius, self.bloom_intensity, self.bloom_threshold, self.chromatic_strength))
-		else
-			self.enable_bloom = false
+		if message.enable ~= nil then
+			self.enable_bloom = message.enable
+			go.set("#quad", "enable_effects1.x", self.enable_bloom and 1 or 0)
 		end
-		go.set("#quad", "enable_effects1.x", self.enable_bloom and 1 or 0)
+		
+		if message.radius then self.bloom_radius = message.radius end
+		if message.intensity then self.bloom_intensity = message.intensity end
+		if message.threshold then self.bloom_threshold = message.threshold end
+
+		go.set("#quad", "effects1", vmath.vector4(self.bloom_radius, self.bloom_intensity, self.bloom_threshold, self.chromatic_strength))
 	elseif message_id == CHROMATIC_ABERRATION then
-		if message.enable then
-			if message.strength then
-				self.chromatic_strength = message.strength
-			end
-			self.enable_chromatic_aberration = true
+		if message.enable ~= nil then
+			self.enable_chromatic_aberration = message.enable
+			go.set("#quad", "enable_effects1.y", self.enable_chromatic_aberration and 1 or 0)
+		end
+		
+		if message.strength then
+			self.chromatic_strength = message.strength
 			go.set("#quad", "effects1.w", self.chromatic_strength)
-		else
-			self.enable_chromatic_aberration = false
 		end
-		go.set("#quad", "enable_effects1.y", self.enable_chromatic_aberration and 1 or 0)
 	elseif message_id == VIGNETTE then
-		if message.enable then
-			if message.strength then self.vignette_strength = message.strength end
-			if message.intensity then self.vignette_intensity = message.intensity end
-
-			self.enable_vignette = true
-			go.set("#quad", "effects2", vmath.vector4(self.vignette_strength, self.vignette_intensity, self.noise_strength, self.distortion_strength))
-		else
-			self.enable_vignette = false
+		if message.enable ~= nil then
+			self.enable_vignette = message.enable
+			go.set("#quad", "enable_effects1.z", self.enable_vignette and 1 or 0)
 		end
-		go.set("#quad", "enable_effects1.z", self.enable_vignette and 1 or 0)
+		
+		if message.strength then self.vignette_strength = message.strength end
+		if message.intensity then self.vignette_intensity = message.intensity end
+		go.set("#quad", "effects2", vmath.vector4(self.vignette_strength, self.vignette_intensity, self.noise_strength, self.distortion_strength))
 	elseif message_id == NOISE then
-		if message.enable then
-			if message.strength then
-				self.noise_strength = message.strength
-			end
-			self.enable_noise = true
+		if message.enable ~= nil then
+			self.enable_noise = message.enable
+			go.set("#quad", "enable_effects1.w", self.enable_noise and 1 or 0)
+		end
+		if message.strength then
+			self.noise_strength = message.strength
 			go.set("#quad", "effects2.z", self.noise_strength )
-		else
-			self.enable_noise = false
 		end
-		go.set("#quad", "enable_effects1.w", self.enable_noise and 1 or 0)
 	elseif message_id == VHS then
-		if message.enable then
-			if message.strength then
-				self.distortion_strength = message.strength
-			end
-			self.enable_vhs_distortion = true
+		if message.enable ~= nil then
+			self.enable_vhs_distortion = message.enable
+			go.set("#quad", "enable_effects2.x", self.enable_vhs_distortion and 1 or 0)
+		end
+		
+		if message.strength then
+			self.distortion_strength = message.strength
 			go.set("#quad", "effects2.w", self.distortion_strength)
-		else
-			self.enable_vhs_distortion = false
 		end
-		go.set("#quad", "enable_effects2.x", self.enable_vhs_distortion and 1 or 0)
 	elseif message_id == SCANLINES then
-		if message.enable then
-			if message.strength then
-				self.scanlines_strength = message.strength
-			end
-			self.enable_scanlines = true
+		if message.enable ~= nil then
+			self.enable_scanlines = message.enable
+			go.set("#quad", "enable_effects2.y", self.enable_scanlines and 1 or 0)
+		end
+		
+		if message.strength then
+			self.scanlines_strength = message.strength
 			go.set("#quad", "effects3.x", self.scanlines_strength )
-		else
-			self.enable_scanlines = false
 		end
-		go.set("#quad", "enable_effects2.y", self.enable_scanlines and 1 or 0)
 	elseif message_id == CRT then
-		if message.enable then
-			if message.curve then
-				self.crt_curve = message.curve
-			end
-			self.enable_crt = true
-			go.set("#quad", "effects3.y", self.crt_curve)
-		else
-			self.enable_crt = false
+		if message.enable ~= nil then
+			self.enable_crt = message.enable
+			go.set("#quad", "enable_effects2.z", self.enable_crt and 1 or 0)
+			
 		end
-		go.set("#quad", "enable_effects2.z", self.enable_crt and 1 or 0)
+		
+		if message.curve then
+			self.crt_curve = message.curve
+			go.set("#quad", "effects3.y", self.crt_curve)
+		end
 	end
 end

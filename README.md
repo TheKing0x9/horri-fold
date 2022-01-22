@@ -11,7 +11,7 @@ You can use Horri-Fold in your own project by adding this project as
 a [Defold library dependency](http://www.defold.com/manuals/libraries/).
 Open your game.project file and in the dependencies field under project add:
 
-https://github.com/TheKing0x9/horri-fold/archive/master.zip
+https://github.com/TheKing0x9/horri-fold/archive/main.zip
 
 Or point to the ZIP file of a [specific release](https://github.com/TheKing0x9/horri-fold/releases).
 
